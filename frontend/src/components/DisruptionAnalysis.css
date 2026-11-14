@@ -1,0 +1,148 @@
+.ai-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #dce3df;
+  border-radius: 12px;
+  background: #fff;
+  color: #25342d;
+}
+
+.ai-panel-header,
+.ai-analysis-heading,
+.ai-action-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ai-panel h3,
+.ai-panel h4 {
+  margin: 0 0 8px;
+}
+
+.ai-panel p {
+  line-height: 1.5;
+}
+
+.ai-panel button {
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 7px;
+  background: #304a32;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ai-panel button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ai-muted {
+  color: #64746a;
+  font-size: 0.9rem;
+}
+
+.ai-error {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff0ee;
+  color: #9c2e24;
+}
+
+.ai-error button {
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.ai-history {
+  display: grid;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.ai-analysis {
+  min-width: 0;
+}
+
+.ai-priority {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ai-priority-low {
+  background: #e8f5e9;
+  color: #25602c;
+}
+
+.ai-priority-medium {
+  background: #fff3d6;
+  color: #805400;
+}
+
+.ai-priority-high {
+  background: #ffe4cc;
+  color: #994500;
+}
+
+.ai-priority-critical {
+  background: #ffdddd;
+  color: #a02020;
+}
+
+.ai-summary {
+  margin: 16px 0;
+}
+
+.ai-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.ai-action {
+  padding: 14px;
+  border: 1px solid #e1e6e2;
+  border-radius: 8px;
+  background: #fafcfb;
+}
+
+.ai-action p {
+  margin: 8px 0 12px;
+}
+
+.ai-action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ai-panel .ai-secondary-button {
+  background: #e6ebe7;
+  color: #304a32;
+}
+
+.ai-history-divider {
+  margin-top: 24px;
+  border-top: 1px solid #e1e6e2;
+}
+
+@media (max-width: 600px) {
+  .ai-panel {
+    padding: 14px;
+  }
+
+  .ai-panel-header > button {
+    width: 100%;
+  }
+}

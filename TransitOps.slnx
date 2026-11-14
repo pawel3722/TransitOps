@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/TransitOps.Api/TransitOps.Api.csproj" />
+  </Folder>
+</Solution>
