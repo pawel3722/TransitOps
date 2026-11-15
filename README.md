@@ -1,159 +1,75 @@
 # TransitOps AI
 
-Aplikacja demonstracyjna wspierająca obsługę zakłóceń w komunikacji miejskiej. Kierowca zgłasza zdarzenie, a dyspozytor przegląda zgłoszenia, uruchamia analizę Gemini i podejmuje decyzje dotyczące proponowanych działań.
+TransitOps to prototyp aplikacji do obsługi zakłóceń w komunikacji miejskiej. Przygotowałem go jako zadanie rekrutacyjne. Chciałem połączyć prosty proces zgłaszania zdarzeń z panelem dyspozytora, w którym AI pomaga ocenić sytuację i zaproponować dalsze kroki.
 
-> **Charakter projektu:** prototyp rekrutacyjny (MVP), nie system przeznaczony do rzeczywistego prowadzenia ruchu. Rekomendacje AI są propozycjami — nie są wykonywane automatycznie.
+AI nie podejmuje decyzji za dyspozytora — każdą propozycję można zaakceptować lub odrzucić, a zaakceptowane działanie oznaczyć jako wykonane.
 
-## Funkcjonalności
+## Demo
 
-- Formularz zgłoszenia zdarzenia dla kierowcy (`/report`).
-- Panel dyspozytora (`/dashboard`): lista zgłoszeń, statystyki, edycja, usuwanie i zmiana statusu.
-- 11 kategorii zdarzeń, m.in. opóźnienia, awarie, kolizje, blokady tras i zdarzenia z pasażerami.
-- Pole linii umożliwia podanie kilku oznaczeń (np. `12, 15`) lub pozostawienie go pustego dla zdarzeń sieciowych / o nieustalonych liniach.
-- Analiza zdarzenia przez Google Gemini: priorytet, podsumowanie i propozycje działań z uzasadnieniem.
-- Decyzje dyspozytora: akceptacja lub odrzucenie propozycji; zaakceptowane działanie można oznaczyć jako wykonane.
-- Historia analiz przechowywana w SQLite.
+Nagranie działania aplikacji: [demo.mp4](demo.mp4).
+
+## Co działa
+
+- Zgłaszanie zdarzeń przez kierowcę (`/report`).
+- Panel dyspozytora (`/dashboard`) z listą zgłoszeń, edycją i zmianą statusu.
+- 11 kategorii zakłóceń, m.in. opóźnienia, awarie, kolizje i blokady tras.
+- Zgłoszenia dotyczące jednej, kilku lub nieustalonych linii.
+- Analiza zgłoszenia przez Gemini: priorytet, podsumowanie i proponowane działania wraz z uzasadnieniem.
+- Akceptowanie, odrzucanie i oznaczanie rekomendacji jako wykonanych.
+- Historia analiz zapisywana w bazie danych.
 
 ## Technologie
 
-| Warstwa | Technologia |
-| --- | --- |
-| Frontend | React 19, TypeScript, Vite 8, React Router |
-| Backend | ASP.NET Core (.NET 10), Web API |
-| Dane | SQLite, Entity Framework Core 10 |
-| AI | Google Gemini API (REST, odpowiedź strukturalna JSON) |
-| Testy | xUnit (projekt `TransitOps.Tests`) |
+- **Backend:** C#, ASP.NET Core (.NET 10), Entity Framework Core, SQLite
+- **Frontend:** React, TypeScript, Vite
+- **AI w aplikacji:** Google Gemini API
+- **Testy:** xUnit
 
-## Wymagania
+## Uruchomienie
 
-- .NET SDK 10
-- Node.js w wersji zgodnej z Vite 8 (Node.js 20.19+ lub 22.12+)
-- npm
-- Klucz Google Gemini API do korzystania z analiz AI
+Potrzebne są .NET SDK 10, Node.js zgodny z Vite 8, npm oraz klucz API Gemini (do funkcji analizy).
 
-## Uruchomienie lokalne
+### Backend
 
-### 1. Backend
-
-W terminalu, z katalogu głównego repozytorium:
-
-```powershell
+```bash
 cd backend/TransitOps.Api
 dotnet restore
-```
-
-Skonfiguruj klucz Gemini **lokalnie**, za pomocą .NET User Secrets:
-
-```powershell
 dotnet user-secrets set "Gemini:ApiKey" "TWOJ_KLUCZ_API"
-```
-
-Model Gemini jest konfigurowany w `appsettings.json` (`Gemini:Model`). W razie potrzeby wybierz model dostępny dla Twojego klucza API.
-
-Zastosuj istniejące migracje bazy danych:
-
-```powershell
 dotnet ef database update
-```
-
-Jeżeli nie masz narzędzia `dotnet ef`, zainstaluj je poleceniem `dotnet tool install --global dotnet-ef` (lub zaktualizuj istniejącą instalację).
-
-Uruchom API:
-
-```powershell
 dotnet run --launch-profile http
 ```
 
-Backend nasłuchuje pod adresem `http://localhost:5230`. Domyślna baza SQLite (`transitops.db`) powstaje w katalogu roboczym backendu po zastosowaniu migracji.
+API będzie dostępne pod adresem `http://localhost:5230`. Jeśli polecenie `dotnet ef` nie jest dostępne, należy zainstalować narzędzie `dotnet-ef`. Model Gemini można zmienić w `appsettings.json` (`Gemini:Model`).
 
-### 2. Frontend
+### Frontend
 
-W **drugim terminalu**, z katalogu głównego repozytorium:
+W drugim terminalu:
 
-```powershell
+```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Otwórz `http://localhost:5173`.
+Aplikacja będzie dostępna pod adresem `http://localhost:5173`. Jeśli backend działa pod innym adresem, można ustawić `VITE_API_URL` w pliku `frontend/.env.local`.
 
-Adres API można zmienić, tworząc plik `frontend/.env.local`:
+Klucz Gemini jest przechowywany po stronie backendu — nie należy umieszczać go w zmiennych `VITE_*` ani commitować do repozytorium.
 
-```dotenv
-VITE_API_URL=http://localhost:5230
-```
+## Testy
 
-Nie umieszczaj klucza Gemini w zmiennych `VITE_*` — są dostępne w kodzie przeglądarki. Zapytania do Gemini wykonuje backend.
-
-## Scenariusz demonstracyjny
-
-1. Otwórz `/report` i zgłoś np. awarię autobusu linii 12.
-2. Przejdź do `/dashboard` i odśwież listę zgłoszeń.
-3. Rozwiń **Analiza AI** przy zgłoszeniu i uruchom analizę.
-4. Zapoznaj się z priorytetem i rekomendacjami Gemini.
-5. Zaakceptuj lub odrzuć rekomendację. Zaakceptowaną można oznaczyć jako wykonaną.
-6. Uruchom ponowną analizę, aby zobaczyć historię analiz tego zgłoszenia.
-
-## API — najważniejsze endpointy
-
-| Metoda | Endpoint | Funkcja |
-| --- | --- | --- |
-| `GET` | `/api/disruptions` | Lista zgłoszeń |
-| `GET` | `/api/disruptions/{id}` | Szczegóły zgłoszenia |
-| `POST` | `/api/disruptions` | Utworzenie zgłoszenia |
-| `PUT` | `/api/disruptions/{id}` | Aktualizacja zgłoszenia |
-| `DELETE` | `/api/disruptions/{id}` | Usunięcie zgłoszenia |
-| `POST` | `/api/disruptions/{id}/analyze` | Nowa analiza AI |
-| `GET` | `/api/disruptions/{id}/analyses` | Historia analiz |
-| `PATCH` | `/api/actions/{id}/status` | Zmiana statusu rekomendacji |
-
-Przykładowe żądanie zmiany statusu rekomendacji:
-
-```http
-PATCH /api/actions/1/status
-Content-Type: application/json
-
-{"status":"Accepted"}
-```
-
-Dopuszczalne przejścia: `Proposed → Accepted / Rejected` oraz `Accepted → Completed`.
-
-## Testy i budowanie
-
-Z katalogu głównego repozytorium:
-
-```powershell
+```bash
 dotnet test backend/TransitOps.Tests
 ```
 
-```powershell
-dotnet build backend/TransitOps.Api
-cd frontend
-npm run build
-npm run lint
-```
+Testy obejmują logikę obsługi rekomendacji. Nie wykonują rzeczywistych zapytań do Gemini.
 
-Testy logiki rekomendacji wykorzystują bazę testową, a nie prawdziwe wywołania Gemini.
+## Wykorzystanie AI
 
-## Architektura
+W projekcie korzystałem z AI na dwa różne sposoby:
 
-- `frontend/src/pages` — widoki kierowcy i dyspozytora.
-- `frontend/src/components` — formularz i panel analizy AI.
-- `frontend/src/api` — komunikacja z backendem.
-- `backend/TransitOps.Api/Controllers` — endpointy HTTP.
-- `backend/TransitOps.Api/Services` — logika aplikacji i integracja z Gemini.
-- `backend/TransitOps.Api/Models`, `DTOs`, `Data` — model domenowy, kontrakty API i EF Core.
-- `backend/TransitOps.Api/Migrations` — migracje schematu SQLite.
+- **Google Gemini API** jest częścią działania aplikacji. Na podstawie zgłoszenia przygotowuje podsumowanie, ocenę priorytetu i propozycje działań. Wyniki są zapisywane, ale ich realizacja wymaga decyzji dyspozytora.
+- **ChatGPT (OpenAI)** służył mi jako wsparcie podczas tworzenia projektu — przy omawianiu rozwiązań, pisaniu i poprawianiu kodu, diagnozowaniu błędów oraz przygotowaniu testów i dokumentacji. Wygenerowane propozycje weryfikowałem w działającej aplikacji.
 
-## Ograniczenia prototypu
+## Ograniczenia
 
-- Brak logowania i podziału uprawnień — role kierowcy i dyspozytora są rozdzielone widokami, a nie autoryzacją API.
-- Oznaczenia wielu linii są przechowywane jako tekst, nie jako osobne rekordy powiązane relacją.
-- Dane o lokalizacji pojazdów, rozkładach i zasobach dyspozytorskich nie są pobierane z rzeczywistych systemów.
-- Odpowiedzi AI mogą zawierać błędy i wymagają weryfikacji przez człowieka.
-- Lokalna konfiguracja CORS zezwala na frontend pod `http://localhost:5173`; wdrożenie wymaga dostosowania konfiguracji.
-
-## Bezpieczeństwo konfiguracji
-
-Nie zapisuj w repozytorium kluczy API, plików `.env.local`, baz `*.db` ani katalogów `bin`, `obj`, `node_modules` i `.vs`. Klucz Gemini jest odczytywany przez backend z konfiguracji `.NET`, a lokalnie powinien być ustawiony przez User Secrets.
+To demonstracyjny MVP, a nie system do rzeczywistego prowadzenia ruchu. Nie ma uwierzytelniania ani integracji z danymi GPS, rozkładami jazdy czy zasobami przewoźnika. Rekomendacje AI mogą być niepełne lub błędne, dlatego wymagają oceny człowieka.
